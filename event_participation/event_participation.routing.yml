@@ -1,0 +1,33 @@
+event_participation.form:
+  path: '/admin/configuration/event-participation'
+  defaults:
+    _form: '\Drupal\event_participation\Form\EventParticipationForm'
+    _title: 'Etkinlik Katılım Formu'
+  requirements:
+    _permission: 'access content'
+
+
+event_participation.list:
+  path: '/admin/configuration/event-participation/list'
+  defaults:
+    _controller: '\Drupal\event_participation\Controller\EventParticipationController::listParticipants'
+    _title: 'Katılımcı Listesi'
+  requirements:
+    _permission: 'administer site configuration'
+
+
+event_participation.edit:
+  path: '/admin/config/event-participation/{id}/edit'
+  defaults:
+    _form: '\Drupal\event_participation\Form\EventParticipationForm'
+    _title: 'Katılımcıyı Düzenle'
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    parameters:
+      id:
+        type: integer
+
+
+
+

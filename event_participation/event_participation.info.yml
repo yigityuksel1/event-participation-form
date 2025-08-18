@@ -1,0 +1,9 @@
+name: 'Event Participation'
+type: module
+description: 'Katılım formu ve listeleme işlemleri'
+core_version_requirement: ^10
+package: Custom
+dependencies:
+  - drupal:views
+  - drupal:views_ui
+  - jsonapi

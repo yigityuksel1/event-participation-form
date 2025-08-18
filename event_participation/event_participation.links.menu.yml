@@ -1,0 +1,12 @@
+event_participation.form:
+  title:  'Etkinlik Katılım Formu'
+  route_name:  'event_participation.form'
+  parent:  system.admin_config_content
+
+
+event_participation.list:
+  title:  'Etkinlik Katılım Listesi'
+  description: 'Manage Event Participants'
+  route_name:  'event_participation.list'
+  parent:  system.admin_config_content
+  
