@@ -19,7 +19,7 @@ event_participation.list:
 event_participation.edit:
   path: '/admin/config/event-participation/{id}/edit'
   defaults:
-    _form: '\Drupal\event_participation\Form\EventParticipationForm'
+    _form: '\Drupal\event_participation\Form\EventParticipationUpdate'
     _title: 'Katılımcıyı Düzenle'
   requirements:
     _permission: 'administer site configuration'
