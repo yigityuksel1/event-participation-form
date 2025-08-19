@@ -13,37 +13,64 @@ class EventParticipationForm extends FormBase {
     return 'event_participation_form';
   }
   
-  //hem submit hem update işlemini aynı anda yapabilmek için id=>NIL
+  //hem submit hem update işlemini aynı anda yapabilmek için id=NIL
 
-  public function buildForm(array $form, FormStateInterface $form_state, $id = NULL) {
-
-    if ($id) {
-      // Admin yetkisi update sadece status attribute için
-      $participant = \Drupal::database()->select('event_participation', 'e')
-        ->fields('e', ['id', 'status'])
-        ->condition('id', $id)
-        ->execute()
-        ->fetchAssoc();
-
-      $form['id'] = [
-        '#type' => 'hidden',
-        '#value' => $id,
-      ];
-
-      $form['status'] = [
-        '#type' => 'select',
-        '#title' => 'Katılım Durumu',
-        '#options' => [
-          1 => 'Aktif',
-          0 => 'Pasif',
-        ],
-        '#default_value' => $participant['status'],
-        '#required' => TRUE,
-      ];
-
-    } else {
-      // yeni katılımcı formu
-      $form['first_name'] = [
+  public function buildForm(array $form, FormStateInterface $form_state,) {
+  
+      // Tabloyu kontrolü yoksa yeni tablo oluşturulur
+      $schema = \Drupal::database()->schema();
+      if (!$schema->tableExists('event_participation')) {
+        $schema->createTable('event_participation', [
+          'fields' => [
+            'id' => [
+              'type' => 'serial',   //her yeni katılımda id artarak gider
+              'not null' => TRUE,
+            ],
+            'first_name' => [
+              'type' => 'varchar',
+              'length' => 250,
+              'not null' => TRUE,
+            ],
+            'last_name' => [
+              'type' => 'varchar',
+              'length' => 250,
+              'not null' => TRUE,
+            ],
+            'phone' => [
+              'type' => 'varchar',
+              'length' => 20,
+              'not null' => TRUE,
+            ],
+            'email' => [
+              'type' => 'varchar',
+              'length' => 255,
+              'not null' => TRUE,
+            ],
+            'birth_date' => [
+              'type' => 'varchar',
+              'length' => 10,
+              'not null' => TRUE,
+            ],
+            'newsletter' => [
+              'type' => 'int',
+              'size' => 'tiny',      //boolean gibi kullanılacağı için tiny seçildi
+              'not null' => TRUE,
+              'default' => 0,
+            ],
+            'status' => [
+              'type' => 'int',
+              'size' => 'tiny',
+              'not null' => TRUE,
+              'default' => 1,
+            ],
+          ],
+          'primary key' => ['id'],
+        ]);
+      }
+    
+     //form
+     
+     $form['first_name'] = [
         '#type' => 'textfield',
         '#title' => 'Adınız',
         '#required' => TRUE,
@@ -88,47 +115,34 @@ class EventParticipationForm extends FormBase {
         '#default_value' => 1,
         '#required' => TRUE,
       ];
-    }
-    //id kontrolü yaparak submit butonu ayarlandı
-    $form['submit'] = [
-      '#type' => 'submit',
-      '#value' => $id ? 'Güncelle' : 'Gönder',
-    ];
-
-    return $form;
-  }
-
+      $form['submit'] = [
+        '#type' => 'submit',
+        '#value' => 'Gönder',
+      ];
+      return $form;
+    }     
+  
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    //validation sadece yeni katılımda (id=>NIL) yapılır
-    if (!$form_state->getValue('id')) {
-      if (!preg_match('/^[0-9]{10}$/', $form_state->getValue('phone'))) {
-        $form_state->setErrorByName('phone', 'Telefon numarası 10 hane olmalı.');
-      }
 
-      $birth_date = $form_state->getValue('birth_date');
-      if (empty($birth_date)) {
-        $form_state->setErrorByName('birth_date', 'Lütfen doğum tarihinizi girin.');
-      } else {
-        $parts = explode('-', $birth_date);
-        if (count($parts) !== 3 || !checkdate($parts[1], $parts[2], $parts[0])) {
-          $form_state->setErrorByName('birth_date', 'Geçerli bir tarih giriniz.');
+    if (!preg_match('/^[0-9]{10}$/', $form_state->getValue('phone'))) {
+      $form_state->setErrorByName('phone', 'Telefon numarası 10 hane olmalı.');
+    }
+  
+      $birthDate = $form_state->getValue('birth_date');
+    if (empty($birthDate)) {
+      $form_state->setErrorByName('birth_date', 'Lütfen doğum tarihinizi girin.');
+    } else {
+      $birthDateParts = explode('-', $birthDate);
+      if (count($birthDateParts) !== 3 || !checkdate($birthDateParts[1], $birthDateParts[2], $birthDateParts[0])) {
+        $form_state->setErrorByName('birth_date', 'Geçerli bir tarih giriniz.');
         }
       }
     }
-  }
+  
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $id = $form_state->getValue('id');
 
-    if ($id) {
-      // id != NIL => update yapılır
-      \Drupal::database()->update('event_participation')
-        ->fields(['status' => $form_state->getValue('status')])
-        ->condition('id', $id)
-        ->execute();
-      $this->messenger()->addMessage('Katılım durumu güncellendi.'); //admine mesaj verilir
-    } else {
-      // id == NIL => insert yapılır
       \Drupal::database()->insert('event_participation')
         ->fields([
           'first_name' => $form_state->getValue('first_name'),
@@ -141,9 +155,6 @@ class EventParticipationForm extends FormBase {
         ])
         ->execute();
       $this->messenger()->addMessage('Katılımınız kaydedildi.'); //kullanıcıya mesaj verilir
+      $form_state->setRedirect('event_participation.list');
     }
-
-    $form_state->setRedirect('event_participation.list');
   }
-}
-
