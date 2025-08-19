@@ -1,12 +1,9 @@
 <?php
 
-/**
- * Implements hook_views_data().
- */
+//hook_views_data
 function event_participation_views_data() {
   $data = [];
 
-  // Tablo tanımı
   $data['event_participation']['table'] = [
     'group' => t('Event Participation'),
     'provider' => 'event_participation',
@@ -17,7 +14,6 @@ function event_participation_views_data() {
     ],
   ];
 
-  // ID
   $data['event_participation']['id'] = [
     'title' => t('ID'),
     'help' => t('Primary Key'),
@@ -26,7 +22,6 @@ function event_participation_views_data() {
     'sort' => ['id' => 'standard'],
   ];
 
-  // Ad
   $data['event_participation']['first_name'] = [
     'title' => t('First Name'),
     'help' => t('Katılımcının adı'),
@@ -35,7 +30,6 @@ function event_participation_views_data() {
     'sort' => ['id' => 'standard'],
   ];
 
-  // Soyad
   $data['event_participation']['last_name'] = [
     'title' => t('Last Name'),
     'help' => t('Katılımcının soyadı'),
@@ -44,7 +38,6 @@ function event_participation_views_data() {
     'sort' => ['id' => 'standard'],
   ];
 
-  // Telefon
   $data['event_participation']['phone'] = [
     'title' => t('Phone'),
     'help' => t('Telefon numarası'),
@@ -53,7 +46,6 @@ function event_participation_views_data() {
     'sort' => ['id' => 'standard'],
   ];
 
-  // Email
   $data['event_participation']['email'] = [
     'title' => t('Email'),
     'help' => t('E-posta adresi'),
@@ -62,7 +54,6 @@ function event_participation_views_data() {
     'sort' => ['id' => 'standard'],
   ];
 
-  // Doğum tarihi
   $data['event_participation']['birth_date'] = [
     'title' => t('Birth Date'),
     'help' => t('Doğum tarihi'),
@@ -71,7 +62,6 @@ function event_participation_views_data() {
     'sort' => ['id' => 'standard'],
   ];
 
-  // Bülten onayı
   $data['event_participation']['newsletter'] = [
     'title' => t('Newsletter'),
     'help' => t('Bültene abone mi?'),
@@ -80,7 +70,6 @@ function event_participation_views_data() {
     'sort' => ['id' => 'standard'],
   ];
 
-  // Katılım durumu
   $data['event_participation']['status'] = [
     'title' => t('Status'),
     'help' => t('Katılım durumu (Aktif/Pasif)'),
