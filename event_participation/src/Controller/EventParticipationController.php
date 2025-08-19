@@ -6,7 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
-
+use Drupal\event_participation\Enum\ParticipantsTableHeader;
 //katılımcı listelemek için controller
 
 class EventParticipationController extends ControllerBase {
@@ -27,7 +27,7 @@ class EventParticipationController extends ControllerBase {
    
     //tablo başlıkları oluşturuldu
    
-    $header =['ID', 'Ad', 'Soyad', 'Telefon', 'Mail', 'Katılım Durumu'];
+    $header = ParticipantsTableHeader::headers();
   
     //sütunlar başlangıçta boş.
     
@@ -36,14 +36,15 @@ class EventParticipationController extends ControllerBase {
     //sql sorgusu
     
     $query = $this->database->select('event_participation', 'e')
-      ->fields('e', ['id', 'first_name', 'last_name', 'phone', 'email', 'status'])
-      ->orderBy('id', 'DESC')
+      ->fields('e', ['id', 'first_name', 'last_name', 'phone', 'email', 'newsletter', 'status'])
+      ->orderBy('id', 'ASC')   //SIRALAMA İLK KATILAN İLK LİSTELENİR
       ->execute();
     
     //her katılımcıyı tabloya girmek için bir foreach döngüsü
     
     foreach ($query as $record) {
       $status_label = $record->status ? 'Aktif' : 'Pasif';
+      $newsletter_label = $record->status ? 'Evet' : 'Hayır';
       $edit_url = Url::fromRoute('event_participation.edit', ['id' => $record->id]);
   
       $rows[] = [
@@ -52,6 +53,7 @@ class EventParticipationController extends ControllerBase {
         $record->last_name,
         $record->phone,
         $record->email,
+        $newsletter_label,
         $status_label,
         [
           'data' => [
